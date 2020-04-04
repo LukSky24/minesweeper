@@ -39,14 +39,21 @@ func main() {
 	}
 
 	vp := sdl.Rect{0, 0, 300, 300}
-	g := CreateGrid(10, 10)
+	g := CreateGrid(10, 10, 10)
 
 	for {
+		sdl.Delay(100)
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
+			switch ev := event.(type) {
 			case *sdl.QuitEvent:
 				fmt.Println("exit")
 				return
+			case *sdl.MouseButtonEvent:
+				if ev.GetType() == sdl.MOUSEBUTTONUP {
+					cellX, cellY := getCellCoordsPosFromMouseCoords(
+						ev.X, ev.Y, 300, 300, 10, 10)
+					g.RevealOn(cellX, cellY)
+				}
 			}
 		}
 
@@ -58,4 +65,11 @@ func main() {
 
 		renderer.Present()
 	}
+}
+
+func getCellCoordsPosFromMouseCoords(x, y int32, w, h int, r, c int) (X int, Y int) {
+	X = (int(x) / (w / c))
+	Y = int(y) / (h / r)
+
+	return X, Y
 }

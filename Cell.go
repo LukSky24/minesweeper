@@ -11,6 +11,13 @@ type Cell struct {
 
 func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
 	r.DrawRect(vp)
+
+	if c.revealed {
+		r.SetDrawColor(100, 100, 100, 255)
+		r.FillRect(&sdl.Rect{vp.X + 1, vp.Y + 1, vp.W - 2, vp.H - 2})
+		r.SetDrawColor(0, 0, 0, 255)
+	}
+
 	if c.revealed && c.bomb {
 		c.drawBomb(r, f, vp)
 	}
