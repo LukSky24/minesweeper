@@ -1,12 +1,15 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
 
 type Cell struct {
 	revealed, bomb bool
+	count          int
 }
 
 func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
@@ -16,6 +19,10 @@ func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
 		r.SetDrawColor(100, 100, 100, 255)
 		r.FillRect(&sdl.Rect{vp.X + 1, vp.Y + 1, vp.W - 2, vp.H - 2})
 		r.SetDrawColor(0, 0, 0, 255)
+
+		if c.count > 0 && !c.bomb {
+			c.drawString(strconv.Itoa(c.count), r, f, vp)
+		}
 	}
 
 	if c.revealed && c.bomb {
@@ -24,7 +31,11 @@ func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
 }
 
 func (c *Cell) drawBomb(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
-	surface, err := f.RenderUTF8Solid("B", sdl.Color{255, 0, 0, 255})
+	c.drawString("B", r, f, vp)
+}
+
+func (c *Cell) drawString(letter string, r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
+	surface, err := f.RenderUTF8Solid(letter, sdl.Color{255, 0, 0, 255})
 	if err != nil {
 		panic(err)
 	}

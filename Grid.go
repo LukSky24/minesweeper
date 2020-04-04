@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
@@ -9,7 +10,7 @@ import (
 
 type Grid struct {
 	cols, rows int
-	cells      []Cell
+	cells      []*Cell
 }
 
 func CreateGrid(cols, rows, bombs int) *Grid {
@@ -18,9 +19,10 @@ func CreateGrid(cols, rows, bombs int) *Grid {
 	g.rows = rows
 
 	for i := 0; i < cols*rows; i++ {
-		g.cells = append(g.cells, Cell{false, false})
+		g.cells = append(g.cells, &Cell{false, false, 0})
 	}
 
+	rand.Seed(time.Now().Unix())
 	bx := rand.Perm(bombs)
 	by := rand.Perm(bombs)
 	for i := 0; i < bombs; i++ {
@@ -31,11 +33,60 @@ func CreateGrid(cols, rows, bombs int) *Grid {
 }
 
 func (g *Grid) getCell(x, y int) *Cell {
-	return &g.cells[coordsToIndex(x, y, g.cols, g.rows)]
+	return g.cells[coordsToIndex(x, y, g.cols, g.rows)]
+}
+
+func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
+	neighbours = make(map[int]*Cell)
+
+	for c := -1; c <= 1; c++ {
+		for r := -1; r <= 1; r++ {
+			if c == 0 && r == 0 {
+				continue
+			}
+
+			if x+c < 0 || x+c >= g.cols || y+r < 0 || y+r >= g.rows {
+				continue
+			}
+
+			neighbours[coordsToIndex(x+c, y+r, g.cols, g.rows)] = g.getCell(x+c, y+r)
+		}
+	}
+
+	return neighbours
 }
 
 func (g *Grid) RevealOn(x, y int) {
-	g.getCell(x, y).revealed = true
+	c := g.getCell(x, y)
+
+	if c.bomb {
+		g.revealAll()
+		return
+	}
+
+	bombCount := 0
+	n := g.getCellNeighbours(x, y)
+	for _, c := range n {
+		if c.bomb {
+			bombCount++
+		}
+	}
+	c.revealed = true
+	if bombCount == 0 {
+		for i, nc := range n {
+			if !nc.revealed {
+				g.RevealOn(indexToCoords(i, g.cols, g.rows))
+			}
+		}
+	} else {
+		c.count = bombCount
+	}
+}
+
+func (g *Grid) revealAll() {
+	for _, c := range g.cells {
+		c.revealed = true
+	}
 }
 
 func (g *Grid) Draw(r *sdl.Renderer, f *ttf.Font, vp sdl.Rect) {
