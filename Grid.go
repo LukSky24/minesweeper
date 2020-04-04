@@ -23,10 +23,11 @@ func CreateGrid(cols, rows, bombs int) *Grid {
 	}
 
 	rand.Seed(time.Now().Unix())
-	bx := rand.Perm(bombs)
-	by := rand.Perm(bombs)
-	for i := 0; i < bombs; i++ {
-		g.getCell(bx[i], by[i]).bomb = true
+	for i, ci := range rand.Perm(cols * rows) {
+		if i >= bombs {
+			break
+		}
+		g.cells[ci].bomb = true
 	}
 
 	return &g

@@ -21,7 +21,7 @@ func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
 		r.SetDrawColor(0, 0, 0, 255)
 
 		if c.count > 0 && !c.bomb {
-			c.drawString(strconv.Itoa(c.count), r, f, vp)
+			c.drawString(strconv.Itoa(c.count), r, f, vp, sdl.Color{0, 0, 255, 255})
 		}
 	}
 
@@ -31,11 +31,11 @@ func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
 }
 
 func (c *Cell) drawBomb(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
-	c.drawString("B", r, f, vp)
+	c.drawString("B", r, f, vp, sdl.Color{255, 0, 0, 255})
 }
 
-func (c *Cell) drawString(letter string, r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
-	surface, err := f.RenderUTF8Solid(letter, sdl.Color{255, 0, 0, 255})
+func (c *Cell) drawString(letter string, r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect, col sdl.Color) {
+	surface, err := f.RenderUTF8Solid(letter, col)
 	if err != nil {
 		panic(err)
 	}

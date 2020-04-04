@@ -10,12 +10,15 @@ import (
 func main() {
 	fmt.Println("minesweeper by eczek.")
 
+	const WINGDOW_WIDTH = 500
+	const WINDOW_HEIGHT = 500
+
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
 		panic(err)
 	}
 
-	window, err := sdl.CreateWindow("Mnesweeper", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, 300, 300, sdl.WINDOW_OPENGL)
+	window, err := sdl.CreateWindow("Mnesweeper", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, WINGDOW_WIDTH, WINDOW_HEIGHT, sdl.WINDOW_OPENGL)
 	if err != nil {
 		panic(err)
 	}
@@ -38,8 +41,12 @@ func main() {
 		panic(err)
 	}
 
-	vp := sdl.Rect{0, 0, 300, 300}
-	g := CreateGrid(10, 10, 10)
+	const COLS = 20
+	const ROWS = 20
+	const BOMBS = 200
+
+	vp := sdl.Rect{0, 0, WINGDOW_WIDTH, WINDOW_HEIGHT}
+	g := CreateGrid(COLS, ROWS, BOMBS)
 
 	for {
 		sdl.Delay(100)
@@ -51,7 +58,7 @@ func main() {
 			case *sdl.MouseButtonEvent:
 				if ev.GetType() == sdl.MOUSEBUTTONUP {
 					cellX, cellY := getCellCoordsPosFromMouseCoords(
-						ev.X, ev.Y, 300, 300, 10, 10)
+						ev.X, ev.Y, WINGDOW_WIDTH, WINDOW_HEIGHT, COLS, ROWS)
 					g.RevealOn(cellX, cellY)
 				}
 			}
@@ -67,7 +74,7 @@ func main() {
 	}
 }
 
-func getCellCoordsPosFromMouseCoords(x, y int32, w, h int, r, c int) (X int, Y int) {
+func getCellCoordsPosFromMouseCoords(x, y int32, w, h int, c, r int) (X int, Y int) {
 	X = (int(x) / (w / c))
 	Y = int(y) / (h / r)
 
