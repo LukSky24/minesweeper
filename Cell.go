@@ -8,12 +8,16 @@ import (
 )
 
 type Cell struct {
-	revealed, bomb bool
-	count          int
+	revealed, bomb, marked bool
+	count                  int
 }
 
 func (c *Cell) Draw(r *sdl.Renderer, f *ttf.Font, vp *sdl.Rect) {
 	r.DrawRect(vp)
+
+	if c.marked {
+		c.drawString("?", r, f, vp, sdl.Color{0, 255, 0, 255})
+	}
 
 	if c.revealed {
 		r.SetDrawColor(100, 100, 100, 255)
@@ -39,11 +43,13 @@ func (c *Cell) drawString(letter string, r *sdl.Renderer, f *ttf.Font, vp *sdl.R
 	if err != nil {
 		panic(err)
 	}
+	defer surface.Free()
 
 	texture, err := r.CreateTextureFromSurface(surface)
 	if err != nil {
 		panic(err)
 	}
+	defer texture.Destroy()
 
 	r.Copy(texture, nil, vp)
 }

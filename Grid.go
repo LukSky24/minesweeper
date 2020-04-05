@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -9,26 +10,20 @@ import (
 )
 
 type Grid struct {
-	cols, rows int
-	cells      []*Cell
+	cols, rows, bombs int
+	cells             []*Cell
 }
 
 func CreateGrid(cols, rows, bombs int) *Grid {
 	g := Grid{}
 	g.cols = cols
 	g.rows = rows
+	g.bombs = bombs
 
-	for i := 0; i < cols*rows; i++ {
-		g.cells = append(g.cells, &Cell{false, false, 0})
+	for i := 0; i < g.cols*g.rows; i++ {
+		g.cells = append(g.cells, &Cell{false, false, false, 0})
 	}
-
-	rand.Seed(time.Now().Unix())
-	for i, ci := range rand.Perm(cols * rows) {
-		if i >= bombs {
-			break
-		}
-		g.cells[ci].bomb = true
-	}
+	g.plantBombs()
 
 	return &g
 }
@@ -59,6 +54,7 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 
 func (g *Grid) RevealOn(x, y int) {
 	c := g.getCell(x, y)
+	c.marked = false
 
 	if c.bomb {
 		g.revealAll()
@@ -84,9 +80,40 @@ func (g *Grid) RevealOn(x, y int) {
 	}
 }
 
+func (g *Grid) ToggleMarkOn(x, y int) {
+	c := g.getCell(x, y)
+	if c.revealed {
+		return
+	}
+
+	c.marked = !c.marked
+}
+
 func (g *Grid) revealAll() {
 	for _, c := range g.cells {
 		c.revealed = true
+		c.marked = false
+	}
+}
+
+func (g *Grid) Reset() {
+	for i := 0; i < g.cols*g.rows; i++ {
+		g.cells[i].bomb = false
+		g.cells[i].marked = false
+		g.cells[i].revealed = false
+		g.cells[i].count = 0
+	}
+
+	g.plantBombs()
+}
+
+func (g *Grid) plantBombs() {
+	rand.Seed(time.Now().Unix())
+	for i, ci := range rand.Perm(g.cols * g.rows) {
+		if i >= g.bombs {
+			break
+		}
+		g.cells[ci].bomb = true
 	}
 }
 
@@ -103,6 +130,20 @@ func (g *Grid) Draw(r *sdl.Renderer, f *ttf.Font, vp sdl.Rect) {
 
 		c.Draw(r, f, &cellVp)
 	}
+
+	if g.victory() {
+		fmt.Println("victory!")
+	}
+}
+
+func (g *Grid) victory() bool {
+	revealed := 0
+	for _, c := range g.cells {
+		if c.revealed {
+			revealed++
+		}
+	}
+	return g.cols*g.rows-revealed == g.bombs
 }
 
 func coordsToIndex(x, y, c, r int) int {

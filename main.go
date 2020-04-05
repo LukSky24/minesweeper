@@ -13,8 +13,8 @@ func main() {
 	const WINGDOW_WIDTH = 800
 	const WINDOW_HEIGHT = 600
 
-	const COLS = 10
-	const ROWS = 10
+	const COLS = 30
+	const ROWS = 30
 	const BOMBS = 10
 
 	err := sdl.Init(sdl.INIT_EVERYTHING)
@@ -59,7 +59,16 @@ func main() {
 				if ev.GetType() == sdl.MOUSEBUTTONUP {
 					cellX, cellY := getCellCoordsPosFromMouseCoords(
 						ev.X, ev.Y, WINGDOW_WIDTH, WINDOW_HEIGHT, COLS, ROWS)
-					g.RevealOn(cellX, cellY)
+
+					switch ev.Button {
+					case sdl.BUTTON_LEFT:
+						g.RevealOn(cellX, cellY)
+					case sdl.BUTTON_RIGHT:
+						g.ToggleMarkOn(cellX, cellY)
+					case sdl.BUTTON_MIDDLE:
+						g.Reset()
+					}
+
 				}
 			}
 		}
