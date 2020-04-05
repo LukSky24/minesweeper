@@ -40,7 +40,7 @@ func main() {
 	}
 	defer ttf.Quit()
 
-	font, err := ttf.OpenFont("Hack-Regular.ttf", 24)
+	font, err := ttf.OpenFont("OpenSans-Regular.ttf", 24)
 	if err != nil {
 		panic(err)
 	}
