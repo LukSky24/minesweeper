@@ -92,8 +92,8 @@ func (g *Grid) revealAll() {
 
 func (g *Grid) Draw(r *sdl.Renderer, f *ttf.Font, vp sdl.Rect) {
 	r.SetViewport(&vp)
-	cellW := r.GetViewport().W / int32(g.cols)
-	cellH := r.GetViewport().H / int32(g.rows)
+	cellW := vp.W / int32(g.cols)
+	cellH := vp.H / int32(g.rows)
 
 	r.SetDrawColor(0, 0, 0, 255)
 
@@ -110,8 +110,8 @@ func coordsToIndex(x, y, c, r int) int {
 }
 
 func indexToCoords(i, c, r int) (x, y int) {
-	y = i / r
-	x = i - (y * r)
+	y = i / c
+	x = i - (y * c)
 
 	return x, y
 }

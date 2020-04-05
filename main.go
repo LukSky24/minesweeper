@@ -10,8 +10,12 @@ import (
 func main() {
 	fmt.Println("minesweeper by eczek.")
 
-	const WINGDOW_WIDTH = 500
-	const WINDOW_HEIGHT = 500
+	const WINGDOW_WIDTH = 800
+	const WINDOW_HEIGHT = 600
+
+	const COLS = 10
+	const ROWS = 10
+	const BOMBS = 10
 
 	err := sdl.Init(sdl.INIT_EVERYTHING)
 	if err != nil {
@@ -40,10 +44,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	const COLS = 20
-	const ROWS = 20
-	const BOMBS = 200
 
 	vp := sdl.Rect{0, 0, WINGDOW_WIDTH, WINDOW_HEIGHT}
 	g := CreateGrid(COLS, ROWS, BOMBS)
