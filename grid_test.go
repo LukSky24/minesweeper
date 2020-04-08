@@ -3,17 +3,22 @@ package main
 import "testing"
 
 func TestCreateGrid(t *testing.T) {
-	g, _ := CreateGrid(10, 10, 10)
+	var revealedCount, cellsCount int
 
-	var count int
+	g, _ := CreateGrid(10, 10, 10)
 	for _, c := range g.cells {
+		cellsCount++
 		if c.revealed {
-			count++
+			revealedCount++
 		}
 	}
 
-	if count > 0 {
-		t.Errorf("New grid should not contain revealed cells, want 0 revealed got %d", count)
+	if cellsCount != 100 {
+		t.Errorf("Grid 10x10 should contain 100 cells, got %d", cellsCount)
+	}
+
+	if revealedCount > 0 {
+		t.Errorf("New grid should not contain revealed cells, want 0 revealed got %d", revealedCount)
 	}
 }
 
