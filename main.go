@@ -46,7 +46,7 @@ func main() {
 	}
 
 	vp := sdl.Rect{0, 0, WINGDOW_WIDTH, WINDOW_HEIGHT}
-	g := CreateGrid(COLS, ROWS, BOMBS)
+	g, _ := CreateGrid(COLS, ROWS, BOMBS)
 
 	for {
 		sdl.Delay(100)

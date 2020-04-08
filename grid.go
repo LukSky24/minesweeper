@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -14,7 +15,12 @@ type Grid struct {
 	cells             []*Cell
 }
 
-func CreateGrid(cols, rows, bombs int) *Grid {
+// CreateGrid constructs unrevealed game grid with bombs planted
+func CreateGrid(cols, rows, bombs int) (*Grid, error) {
+	if bombs >= cols*rows {
+		return nil, errors.New("Bombs count must not be greater or equal to cells count")
+	}
+
 	g := Grid{}
 	g.cols = cols
 	g.rows = rows
@@ -25,11 +31,15 @@ func CreateGrid(cols, rows, bombs int) *Grid {
 	}
 	g.plantBombs()
 
-	return &g
+	return &g, nil
 }
 
-func (g *Grid) getCell(x, y int) *Cell {
-	return g.cells[coordsToIndex(x, y, g.cols, g.rows)]
+func (g *Grid) getCell(x, y int) (*Cell, error) {
+	if x > g.cols-1 || x < 0 || y > g.rows-1 || y < 0 {
+		return nil, errors.New("Trying to reach fer cell out of range")
+	}
+
+	return g.cells[coordsToIndex(x, y, g.cols, g.rows)], nil
 }
 
 func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
@@ -45,7 +55,7 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 				continue
 			}
 
-			neighbours[coordsToIndex(x+c, y+r, g.cols, g.rows)] = g.getCell(x+c, y+r)
+			// neighbours[coordsToIndex(x+c, y+r, g.cols, g.rows)] = g.getCell(x+c, y+r)
 		}
 	}
 
@@ -53,40 +63,40 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 }
 
 func (g *Grid) RevealOn(x, y int) {
-	c := g.getCell(x, y)
-	c.marked = false
+	// c := g.getCell(x, y)
+	// c.marked = false
 
-	if c.bomb {
-		g.revealAll()
-		return
-	}
+	// if c.bomb {
+	// 	g.revealAll()
+	// 	return
+	// }
 
-	bombCount := 0
-	n := g.getCellNeighbours(x, y)
-	for _, c := range n {
-		if c.bomb {
-			bombCount++
-		}
-	}
-	c.revealed = true
-	if bombCount == 0 {
-		for i, nc := range n {
-			if !nc.revealed {
-				g.RevealOn(indexToCoords(i, g.cols, g.rows))
-			}
-		}
-	} else {
-		c.count = bombCount
-	}
+	// bombCount := 0
+	// n := g.getCellNeighbours(x, y)
+	// for _, c := range n {
+	// 	if c.bomb {
+	// 		bombCount++
+	// 	}
+	// }
+	// c.revealed = true
+	// if bombCount == 0 {
+	// 	for i, nc := range n {
+	// 		if !nc.revealed {
+	// 			g.RevealOn(indexToCoords(i, g.cols, g.rows))
+	// 		}
+	// 	}
+	// } else {
+	// 	c.count = bombCount
+	// }
 }
 
 func (g *Grid) ToggleMarkOn(x, y int) {
-	c := g.getCell(x, y)
-	if c.revealed {
-		return
-	}
+	// c := g.getCell(x, y)
+	// if c.revealed {
+	// 	return
+	// }
 
-	c.marked = !c.marked
+	// c.marked = !c.marked
 }
 
 func (g *Grid) revealAll() {
