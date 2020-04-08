@@ -52,17 +52,17 @@ func TestCantCreateGridWithTooManyBombs(t *testing.T) {
 }
 
 func TestCantReachNotExistingCell(t *testing.T) {
-	var coords = [6][2]int{
-		{10, 0},
-		{0, 10},
-		{10, 10},
-		{-1, 0},
-		{0, -1},
-		{-1, -1}}
+	var tests = [6]Coords{
+		Coords{10, 0},
+		Coords{0, 10},
+		Coords{10, 10},
+		Coords{-1, 0},
+		Coords{0, -1},
+		Coords{-1, -1}}
 	g, _ := CreateGrid(10, 10, 10)
 
-	for _, coord := range coords {
-		c, err := g.getCell(coord[0], coord[1])
+	for _, coords := range tests {
+		c, err := g.getCell(coords)
 		if c != nil {
 			t.Errorf("Should not allow to reach for cell out of range")
 		}
@@ -108,20 +108,20 @@ func TestIndexToCoords(t *testing.T) {
 func TestGetNeighbours(t *testing.T) {
 	g, _ := CreateGrid(10, 10, 10)
 
-	wants := map[[2]int][]int{
-		{0, 0}: []int{1, 10, 11},
-		{0, 4}: []int{30, 31, 41, 50, 51},
-		{5, 5}: []int{44, 45, 46, 54, 56, 64, 65, 66},
-		{1, 9}: []int{80, 81, 82, 90, 92},
-		{9, 9}: []int{88, 89, 98}}
+	wants := map[Coords][]int{
+		Coords{0, 0}: []int{1, 10, 11},
+		Coords{0, 4}: []int{30, 31, 41, 50, 51},
+		Coords{5, 5}: []int{44, 45, 46, 54, 56, 64, 65, 66},
+		Coords{1, 9}: []int{80, 81, 82, 90, 92},
+		Coords{9, 9}: []int{88, 89, 98}}
 
 	for coords, want := range wants {
-		n := g.getCellNeighbours(coords[0], coords[1])
+		n := g.getCellNeighbours(coords)
 		got := getNeighboursKeys(n)
 
 		if !reflect.DeepEqual(want, got) {
-			t.Errorf("getCellNeighbours(%d, %d) cell indexes = %v; want %v",
-				coords[0], coords[1], got, want)
+			t.Errorf("getCellNeighbours(%v) cell indexes = %v; want %v",
+				coords, got, want)
 		}
 	}
 }

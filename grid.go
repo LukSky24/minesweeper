@@ -10,6 +10,11 @@ import (
 	"github.com/veandco/go-sdl2/ttf"
 )
 
+// Coords structure stores coordinates of Cell in Grid
+type Coords struct {
+	X, Y int
+}
+
 type Grid struct {
 	cols, rows, bombs int
 	cells             []*Cell
@@ -34,15 +39,15 @@ func CreateGrid(cols, rows, bombs int) (*Grid, error) {
 	return &g, nil
 }
 
-func (g *Grid) getCell(x, y int) (*Cell, error) {
-	if x > g.cols-1 || x < 0 || y > g.rows-1 || y < 0 {
+func (g *Grid) getCell(coords Coords) (*Cell, error) {
+	if coords.X > g.cols-1 || coords.X < 0 || coords.Y > g.rows-1 || coords.Y < 0 {
 		return nil, errors.New("Trying to reach fer cell out of range")
 	}
 
-	return g.cells[coordsToIndex(x, y, g.cols)], nil
+	return g.cells[coordsToIndex(coords.X, coords.Y, g.cols)], nil
 }
 
-func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
+func (g *Grid) getCellNeighbours(coords Coords) (neighbours map[int]*Cell) {
 	neighbours = make(map[int]*Cell)
 
 	for c := -1; c <= 1; c++ {
@@ -51,13 +56,14 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 				continue
 			}
 
-			if x+c < 0 || x+c >= g.cols || y+r < 0 || y+r >= g.rows {
+			if coords.X+c < 0 || coords.X+c >= g.cols ||
+				coords.Y+r < 0 || coords.Y+r >= g.rows {
 				continue
 			}
 
-			cell, err := g.getCell(x+c, y+r)
+			cell, err := g.getCell(Coords{coords.X + c, coords.Y + r})
 			if err == nil {
-				neighbours[coordsToIndex(x+c, y+r, g.cols)] = cell
+				neighbours[coordsToIndex(coords.X+c, coords.Y+r, g.cols)] = cell
 			}
 		}
 	}
@@ -66,7 +72,7 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 }
 
 func (g *Grid) RevealOn(x, y int) {
-	c, err := g.getCell(x, y)
+	c, err := g.getCell(Coords{x, y})
 	if err != nil {
 		return
 	}
@@ -79,7 +85,7 @@ func (g *Grid) RevealOn(x, y int) {
 	}
 
 	bombCount := 0
-	n := g.getCellNeighbours(x, y)
+	n := g.getCellNeighbours(Coords{x, y})
 	for _, c := range n {
 		if c.bomb {
 			bombCount++
