@@ -75,32 +75,32 @@ func TestCantReachNotExistingCell(t *testing.T) {
 
 func TestCoordsToIndex(t *testing.T) {
 	var tests = map[int][4]int{
-		0:  {0, 0, 1, 1},
-		1:  {0, 1, 1, 2},
-		2:  {0, 1, 2, 2},
-		24: {4, 4, 5, 5}}
+		0:  {0, 0, 1},
+		1:  {0, 1, 1},
+		2:  {0, 1, 2},
+		24: {4, 4, 5}}
 
 	for i, args := range tests {
-		got := coordsToIndex(args[0], args[1], args[2], args[3])
+		got := coordsToIndex(args[0], args[1], args[2])
 		if got != i {
-			t.Errorf("cordsToIndex(%d, %d, %d, %d) = %d; want %d",
-				args[0], args[1], args[2], args[3], got, i)
+			t.Errorf("cordsToIndex(%d, %d, %d) = %d; want %d",
+				args[0], args[1], args[2], got, i)
 		}
 	}
 }
 
 func TestIndexToCoords(t *testing.T) {
 	var tests = map[int][4]int{
-		0:  {0, 0, 1, 1},
-		1:  {0, 1, 1, 2},
-		2:  {0, 1, 2, 2},
-		24: {4, 4, 5, 5}}
+		0:  {0, 0, 1},
+		1:  {0, 1, 1},
+		2:  {0, 1, 2},
+		24: {4, 4, 5}}
 
 	for i, args := range tests {
-		gotX, gotY := indexToCoords(i, args[2], args[3])
+		gotX, gotY := indexToCoords(i, args[2])
 		if gotX != args[0] || gotY != args[1] {
-			t.Errorf("indexToCoords(%d, %d, %d) = %d, %d; want %d, %d",
-				i, args[2], args[3], gotX, gotY, args[0], args[1])
+			t.Errorf("indexToCoords(%d, %d) = %d, %d; want %d, %d",
+				i, args[2], gotX, gotY, args[0], args[1])
 		}
 	}
 }

@@ -39,7 +39,7 @@ func (g *Grid) getCell(x, y int) (*Cell, error) {
 		return nil, errors.New("Trying to reach fer cell out of range")
 	}
 
-	return g.cells[coordsToIndex(x, y, g.cols, g.rows)], nil
+	return g.cells[coordsToIndex(x, y, g.cols)], nil
 }
 
 func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
@@ -57,7 +57,7 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 
 			cell, err := g.getCell(x+c, y+r)
 			if err == nil {
-				neighbours[coordsToIndex(x+c, y+r, g.cols, g.rows)] = cell
+				neighbours[coordsToIndex(x+c, y+r, g.cols)] = cell
 			}
 		}
 	}
@@ -89,7 +89,7 @@ func (g *Grid) RevealOn(x, y int) {
 	if bombCount == 0 {
 		for i, nc := range n {
 			if !nc.revealed {
-				g.RevealOn(indexToCoords(i, g.cols, g.rows))
+				g.RevealOn(indexToCoords(i, g.cols))
 			}
 		}
 	} else {
@@ -142,7 +142,7 @@ func (g *Grid) Draw(r *sdl.Renderer, f *ttf.Font, vp sdl.Rect) {
 	r.SetDrawColor(0, 0, 0, 255)
 
 	for i, c := range g.cells {
-		x, y := indexToCoords(i, g.cols, g.rows)
+		x, y := indexToCoords(i, g.cols)
 		cellVp := sdl.Rect{int32(x) * cellW, int32(y) * cellH, cellW, cellH}
 
 		c.Draw(r, f, &cellVp)
@@ -163,11 +163,11 @@ func (g *Grid) victory() bool {
 	return g.cols*g.rows-revealed == g.bombs
 }
 
-func coordsToIndex(x, y, cols, rows int) int {
+func coordsToIndex(x, y, cols int) int {
 	return y*cols + x
 }
 
-func indexToCoords(i, cols, rows int) (x, y int) {
+func indexToCoords(i, cols int) (x, y int) {
 	y = i / cols
 	x = i - (y * cols)
 
