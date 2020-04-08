@@ -156,13 +156,13 @@ func (g *Grid) victory() bool {
 	return g.cols*g.rows-revealed == g.bombs
 }
 
-func coordsToIndex(x, y, c, r int) int {
-	return y*c + x
+func coordsToIndex(x, y, cols, rows int) int {
+	return y*cols + x
 }
 
-func indexToCoords(i, c, r int) (x, y int) {
-	y = i / c
-	x = i - (y * c)
+func indexToCoords(i, cols, rows int) (x, y int) {
+	y = i / cols
+	x = i - (y * cols)
 
 	return x, y
 }
