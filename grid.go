@@ -55,7 +55,10 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 				continue
 			}
 
-			// neighbours[coordsToIndex(x+c, y+r, g.cols, g.rows)] = g.getCell(x+c, y+r)
+			cell, err := g.getCell(x+c, y+r)
+			if err == nil {
+				neighbours[coordsToIndex(x+c, y+r, g.cols, g.rows)] = cell
+			}
 		}
 	}
 
@@ -63,31 +66,35 @@ func (g *Grid) getCellNeighbours(x, y int) (neighbours map[int]*Cell) {
 }
 
 func (g *Grid) RevealOn(x, y int) {
-	// c := g.getCell(x, y)
-	// c.marked = false
+	c, err := g.getCell(x, y)
+	if err != nil {
+		return
+	}
 
-	// if c.bomb {
-	// 	g.revealAll()
-	// 	return
-	// }
+	c.marked = false
 
-	// bombCount := 0
-	// n := g.getCellNeighbours(x, y)
-	// for _, c := range n {
-	// 	if c.bomb {
-	// 		bombCount++
-	// 	}
-	// }
-	// c.revealed = true
-	// if bombCount == 0 {
-	// 	for i, nc := range n {
-	// 		if !nc.revealed {
-	// 			g.RevealOn(indexToCoords(i, g.cols, g.rows))
-	// 		}
-	// 	}
-	// } else {
-	// 	c.count = bombCount
-	// }
+	if c.bomb {
+		g.revealAll()
+		return
+	}
+
+	bombCount := 0
+	n := g.getCellNeighbours(x, y)
+	for _, c := range n {
+		if c.bomb {
+			bombCount++
+		}
+	}
+	c.revealed = true
+	if bombCount == 0 {
+		for i, nc := range n {
+			if !nc.revealed {
+				g.RevealOn(indexToCoords(i, g.cols, g.rows))
+			}
+		}
+	} else {
+		c.count = bombCount
+	}
 }
 
 func (g *Grid) ToggleMarkOn(x, y int) {

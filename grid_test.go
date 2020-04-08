@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"sort"
+	"testing"
+)
 
 func TestCreateGrid(t *testing.T) {
 	var revealedCount, cellsCount int
@@ -99,4 +103,37 @@ func TestIndexToCoords(t *testing.T) {
 				i, args[2], args[3], gotX, gotY, args[0], args[1])
 		}
 	}
+}
+
+func TestGetNeighbours(t *testing.T) {
+	g, _ := CreateGrid(10, 10, 10)
+
+	wants := map[[2]int][]int{
+		{0, 0}: []int{1, 10, 11},
+		{0, 4}: []int{30, 31, 41, 50, 51},
+		{5, 5}: []int{44, 45, 46, 54, 56, 64, 65, 66},
+		{1, 9}: []int{80, 81, 82, 90, 92},
+		{9, 9}: []int{88, 89, 98}}
+
+	for coords, want := range wants {
+		n := g.getCellNeighbours(coords[0], coords[1])
+		got := getNeighboursKeys(n)
+
+		if !reflect.DeepEqual(want, got) {
+			t.Errorf("getCellNeighbours(%d, %d) cell indexes = %v; want %v",
+				coords[0], coords[1], got, want)
+		}
+	}
+}
+
+func getNeighboursKeys(n map[int]*Cell) []int {
+	keys := make([]int, len(n))
+	i := 0
+	for pos := range n {
+		keys[i] = pos
+		i++
+	}
+	sort.Ints(keys)
+
+	return keys
 }
