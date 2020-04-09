@@ -47,8 +47,8 @@ func (g *Grid) getCell(coords Coords) (*Cell, error) {
 	return g.cells[coordsToIndex(coords.X, coords.Y, g.cols)], nil
 }
 
-func (g *Grid) getCellNeighbours(coords Coords) (neighbours map[int]*Cell) {
-	neighbours = make(map[int]*Cell)
+func (g *Grid) getCellNeighbours(coords Coords) (neighbours map[Coords]*Cell) {
+	neighbours = make(map[Coords]*Cell)
 
 	for c := -1; c <= 1; c++ {
 		for r := -1; r <= 1; r++ {
@@ -63,7 +63,7 @@ func (g *Grid) getCellNeighbours(coords Coords) (neighbours map[int]*Cell) {
 
 			cell, err := g.getCell(Coords{coords.X + c, coords.Y + r})
 			if err == nil {
-				neighbours[coordsToIndex(coords.X+c, coords.Y+r, g.cols)] = cell
+				neighbours[Coords{coords.X + c, coords.Y + r}] = cell
 			}
 		}
 	}
@@ -95,7 +95,8 @@ func (g *Grid) RevealOn(x, y int) {
 	if bombCount == 0 {
 		for i, nc := range n {
 			if !nc.revealed {
-				g.RevealOn(indexToCoords(i, g.cols))
+				_ = i
+				// g.RevealOn(indexToCoords(i, g.cols))
 			}
 		}
 	} else {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"reflect"
-	"sort"
 	"testing"
 )
 
@@ -108,32 +106,46 @@ func TestIndexToCoords(t *testing.T) {
 func TestGetNeighbours(t *testing.T) {
 	g, _ := CreateGrid(10, 10, 10)
 
-	wants := map[Coords][]int{
-		Coords{0, 0}: []int{1, 10, 11},
-		Coords{0, 4}: []int{30, 31, 41, 50, 51},
-		Coords{5, 5}: []int{44, 45, 46, 54, 56, 64, 65, 66},
-		Coords{1, 9}: []int{80, 81, 82, 90, 92},
-		Coords{9, 9}: []int{88, 89, 98}}
+	wants := map[Coords][]Coords{
+		Coords{0, 0}: []Coords{Coords{1, 0}, Coords{0, 1}, Coords{1, 1}},
+		Coords{0, 4}: []Coords{Coords{0, 3}, Coords{1, 3}, Coords{1, 4}, Coords{0, 5}, Coords{1, 5}},
+		Coords{5, 5}: []Coords{Coords{4, 4}, Coords{5, 4}, Coords{6, 4}, Coords{4, 5}, Coords{6, 5}, Coords{4, 6}, Coords{5, 6}, Coords{6, 6}},
+		Coords{1, 9}: []Coords{Coords{0, 8}, Coords{1, 8}, Coords{2, 8}, Coords{0, 9}, Coords{2, 9}},
+		Coords{9, 9}: []Coords{Coords{8, 8}, Coords{9, 8}, Coords{8, 9}}}
 
 	for coords, want := range wants {
 		n := g.getCellNeighbours(coords)
 		got := getNeighboursKeys(n)
 
-		if !reflect.DeepEqual(want, got) {
+		if !equal(want, got) {
 			t.Errorf("getCellNeighbours(%v) cell indexes = %v; want %v",
 				coords, got, want)
 		}
 	}
 }
 
-func getNeighboursKeys(n map[int]*Cell) []int {
-	keys := make([]int, len(n))
+func getNeighboursKeys(n map[Coords]*Cell) []Coords {
+	keys := make([]Coords, len(n))
 	i := 0
-	for pos := range n {
-		keys[i] = pos
+	for coords := range n {
+		keys[i] = coords
 		i++
 	}
-	sort.Ints(keys)
 
 	return keys
+}
+
+func equal(a, b []Coords) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for _, j := range a {
+		for _, k := range b {
+			if j.X == k.X && j.Y == k.Y {
+				return true
+			}
+		}
+	}
+	return false
 }
