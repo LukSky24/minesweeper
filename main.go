@@ -22,7 +22,7 @@ func main() {
 		panic(err)
 	}
 
-	window, err := sdl.CreateWindow("Mnesweeper", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, WINGDOW_WIDTH, WINDOW_HEIGHT, sdl.WINDOW_OPENGL)
+	window, err := sdl.CreateWindow("Minesweeper", sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, WINGDOW_WIDTH, WINDOW_HEIGHT, sdl.WINDOW_OPENGL)
 	if err != nil {
 		panic(err)
 	}
