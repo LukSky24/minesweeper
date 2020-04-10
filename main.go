@@ -57,14 +57,14 @@ func main() {
 				return
 			case *sdl.MouseButtonEvent:
 				if ev.GetType() == sdl.MOUSEBUTTONUP {
-					cellX, cellY := getCellCoordsPosFromMouseCoords(
+					coords := getCellCoordsPosFromMouseCoords(
 						ev.X, ev.Y, WINGDOW_WIDTH, WINDOW_HEIGHT, COLS, ROWS)
 
 					switch ev.Button {
 					case sdl.BUTTON_LEFT:
-						g.RevealOn(cellX, cellY)
+						g.RevealOn(coords)
 					case sdl.BUTTON_RIGHT:
-						g.ToggleMarkOn(cellX, cellY)
+						g.ToggleMarkOn(coords)
 					case sdl.BUTTON_MIDDLE:
 						g.Reset()
 					}
@@ -83,9 +83,9 @@ func main() {
 	}
 }
 
-func getCellCoordsPosFromMouseCoords(x, y int32, w, h int, c, r int) (X int, Y int) {
-	X = (int(x) / (w / c))
-	Y = int(y) / (h / r)
+func getCellCoordsPosFromMouseCoords(x, y int32, w, h int, c, r int) Coords {
+	X := int(x) / (w / c)
+	Y := int(y) / (h / r)
 
-	return X, Y
+	return Coords{X, Y}
 }
